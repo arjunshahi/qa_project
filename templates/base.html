@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title>QA(Question and Get Answers) System</title>
+
+    <!-- Google font -->
+    <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:700%7CNunito:300,600" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link type="text/css" rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}"/>
+
+    <!-- Font Awesome Icon -->
+    <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
+    <!-- Custom stlylesheet -->
+    <link type="text/css" rel="stylesheet" href="{% static 'css/style.css' %}"/>
+       <style>
+        .button {
+ display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+.btn-info {
+    color: #fff;
+    background-color: #5bc0de;
+    border-color: #46b8da;
+}
+.badge {
+  background: red;
+  color: white;
+}
+.error {
+    font-size: .694rem;
+    color: #ED1C24;
+    display: block;
+    margin-top: 4px;
+    font-style: italic;
+}
+.error1 {
+    color: #ED1C24;
+    display: block;
+    margin-top: 4px;
+    font-style: italic;
+}
+.error2 {
+    color: #ED1C24;
+    display: block;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+    </style>
+    {% block extra_styles %}
+
+    {% endblock %}
+
+
+</head>
+{% block modal %}
+<div class="modal--user">
+    <div class="modal" id="createQuestion" tabindex="-1" role="dialog" aria-labelledby="createUserTitle"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">
+                        Ask Question
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                      <form method="post" action="{% url 'qa:create_question' %}">
+                        {% csrf_token %}
+                        <div class="form-group row">
+                             <div class="col-sm-5">
+                             <label for="exampleFormControlSelect1">Category</label>
+
+                            <select name="category" class="form-control" id="exampleFormControlSelect1">
+                                {% for category in categories %}
+                                <option value="{{category.pk}}">{{category.title}}</option>
+                                {% endfor %}
+                            </select>
+                             </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Question Body</label>
+                            <div class="col-sm-12">
+                                <textarea class="form-control" id="question" required rows="7" name="question" placeholder="Your Question Detail">{% if form.body.value %}{{form.body.value}}{% endif %}</textarea>
+                            </div>
+                        </div>
+                          <div class="modal-footer">
+                              <button class="btn btn-white" data-dismiss="modal">
+                                  Close
+                              </button>
+                              <input class="btn btn-success" id="id-btn" type="submit" value="Post Question">
+                          </div>
+
+                   </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal--user">
+    <div class="modal" id="notificationModal" tabindex="-1" role="dialog" aria-labelledby="createUserTitle"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <b>Notifications</b>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <ol>
+                        <li><a href="">A user accepted your answer A user accepted your answer</a></li>
+                        <li><a href="">A user accepted your answer</a></li>
+                    </ol>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+<body>
+
+
+<!-- Header -->
+<header id="header">
+    <!-- Nav -->
+    <div id="nav">
+        <!-- Main Nav -->
+        <div id="nav-fixed">
+            <div class="container">
+                <!-- logo -->
+                <div class="nav-logo">
+                    <a href="{% url 'qa:list_questions' %}" class="logo"><img src="{% static '/img/logo1.png' %}" alt=""></a>
+                </div>
+                <!-- search & aside toggle -->
+                <div class="nav-btns">
+                    <a class="fa fa-bell-o" style="text-decoration:none;" data-toggle="modal" data-target="#notificationModal"><span class="badge">3</span></a>&nbsp;&nbsp;&nbsp;
+                    <i class="fa fa-user-circle-o"><a href="{% url 'users:user_profile' %}" style="text-decoration:none;">Profile</a></i>&nbsp;&nbsp;&nbsp;
+                    <a style="text-decoration:none;" data-toggle="modal" data-target="#createQuestion"
+                       class="button btn-info">Ask Question</a>
+
+                    <button class="aside-btn"><i class="fa fa-bars"></i></button>
+                </div>
+                <!-- /search & aside toggle -->
+            </div>
+
+
+        </div>
+
+        <!-- /Main Nav -->
+
+        <!-- Aside Nav -->
+        <div id="nav-aside">
+
+            <!-- nav -->
+            <div class="section-row">
+
+                <ul class="nav-aside-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="contact.html">Contacts</a></li>
+                </ul>
+            </div>
+            <!-- /nav -->
+
+
+            <!-- social links -->
+            <div class="section-row">
+                <h3>Follow us</h3>
+                <ul class="nav-aside-social">
+                    <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                    <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                </ul>
+            </div>
+            <!-- /social links -->
+
+            <!-- aside nav close -->
+            <button class="nav-aside-close"><i class="fa fa-times"></i></button>
+            <!-- /aside nav close -->
+        </div>
+        <!-- Aside Nav -->
+    </div>
+    <!-- /Nav -->
+</header>
+
+{% block content %}
+<!-- /section -->
+{% endblock %}
+<!-- Footer -->
+<footer id="footer">
+    <!-- container -->
+    <div class="container">
+        <!-- row -->
+
+        <div class="col-12">
+
+            <div class="footer-copyright text-center">
+								<span>&copy;
+                                    <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i
+                                            class="fa fa-heart-o" aria-hidden="true"></i> by <a
+                                            href="https://colorlib.com" target="_blank">Colorlib</a>
+                                    <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></span>
+
+            </div>
+        </div>
+
+        <!-- /row -->
+    </div>
+    <!-- /container -->
+</footer>
+<!-- /Footer -->
+
+<!-- jQuery Plugins -->
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/main.js' %}"></script>
+<script>
+    $(document).ready(function() {
+        setTimeout(function() {
+            $('.message').fadeOut('slow');
+        }, 3000); // <-- time in milliseconds, 1000 =  1 sec
+        });
+</script>
+<script>
+  $(document).ready(function() {
+    $('input[type="submit"]').attr('disabled', true);
+
+    $('input[type="text"],textarea').on('keyup',function() {
+        var textarea_value = $("#question").val();
+
+        if(textarea_value != '') {
+            $('input[type="submit"]').attr('disabled', false);
+        } else {
+            $('input[type="submit"]').attr('disabled', true);
+        }
+    });
+});
+</script>
+{% block extra_scripts %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+{% endblock %}
+</body>
+</html>

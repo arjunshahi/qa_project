@@ -1,0 +1,33 @@
+{% extends 'users/register.html' %}
+{% load static %}
+
+    <!-- Title Page-->
+<title>{% block title %}QA | Login{% endblock %}</title>
+{% block content %}
+
+<h2 class="title">Login Info</h2>
+             <form method="POST" action="{% url 'login_user' %}">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input class="input--style-1" type="text" placeholder="Email" name="email"
+                               {% if form.email.value %} value="{{form.email.value}}" {% endif %}
+                               required>
+                    </div>
+
+                    <div class="input-group">
+                        <input class="input--style-1" type="password" placeholder="Password" name="password"
+                               required>
+                    </div>
+                    <div class="p-t-20">
+                        <button class="btn btn--radius btn--green" type="submit">Submit</button>
+                    </div>
+                    <div class="p-t-20">
+                        <small><a class="input--style-1">Forgot Password ?</a></small>
+                    </div>
+                    <div class="p-t-20">
+                        <small><b class="input--style-1">Don't have an account?</b></small>
+                        <a style="color:#0077CC;" href="{% url 'users:register_user' %}">Create</a>
+                    </div>
+
+                </form>
+{% endblock %}

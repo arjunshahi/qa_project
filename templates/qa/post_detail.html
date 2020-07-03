@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+
+
+<div class="section">
+{% if messages %}
+{% for message in messages %}
+<div class="text-center"><b class="alert {{message.tags}} message">{{message}}</b></div>
+{% endfor %}
+{% endif %}
+    <!-- container -->
+    <div class="container">
+        <!-- row -->
+        <div class="row">
+            <!-- Post content -->
+            <div class="col-md-8">
+                <div class="section-row ">
+                    <div class="main-post ">
+                        <p>{{question.question}}</p>
+                        <div class="post-comments">
+                               <div class="media">
+                          <div class="media-body">
+                                 <div class="card pull-right text-white bg-secondary mb-3" style="width: 13rem;">
+                                      <div class="media-heading">
+                                    <span class="time">
+                                        <b>Posted by</b>
+                                    </span>
+                                </div>
+                                  <div class="card-body">
+                                      <small>
+                                          {{question.user.first_name}}
+                                          {{question.user.last_name}}</b></small>
+                                      <small class="mb-2 text-muted">
+                                          <small>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; {{question.created|timesince}}
+                                              ago
+                                          </small>
+                                      </small>
+                                  </div>
+                              </div>
+                                <div class="media-heading">
+                                    <span class="time">
+                                     <b>30 Upvotes  15 Views</b>
+                                    </span>
+                                </div>
+                              <div class="btn-toolbar">
+                                <button type="button" class="btn btn-success btn-sm pull-left">Upvote</button>&nbsp;
+                    <a id="formButton"><button class="btn btn-info btn-sm">Post your Answer</button></a>
+                    </div>
+                    <form class="post-reply" id="form1" style="display:none;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <textarea class="input" name="message" placeholder="Your Answer"></textarea>
+                                </div>
+                                <button class="btn btn-info">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+
+                          </div>
+                           </div>
+                        </div>
+
+
+                    </div>
+
+                <div class="section-row">
+
+
+                  <br>  <br>
+<!--                    <div class="post-comments">-->
+<!--                        <div class="media">-->
+<!--                            <div class="media-body">-->
+<!--                            <div class="media-right">-->
+<!--                            </div>-->
+<!--                                <div class="media-heading ">-->
+<!--                                    <small>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmo-->
+<!--                                    </small>-->
+<!--                                    <span class="time">1 minutes ago</span>-->
+<!--                                    <a href="#" class="reply">Ram Thapa</a>-->
+<!--                                </div>-->
+
+<!--                            </div>-->
+<!--                        </div><br>-->
+<!--                        <a id="commentButton" style="text-decoration:none;"><h5>Add a comment</h5></a>-->
+<!--                        <div class="section-row">-->
+<!--                            <form class="post-reply" id="commentForm" style="display:none;" >-->
+<!--                                <div class="row">-->
+<!--                                    <div class="col-md-8">-->
+<!--                                        <div class="form-group">-->
+<!--                                            <textarea class="form-control" name="message" placeholder="Comment"-->
+<!--                                                      rows="2"></textarea>-->
+<!--                                        </div>-->
+<!--                                        <button class="btn btn-success btn-sm">Add</button>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </form>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+                </div>
+                </div>
+
+
+                <div class="section-row">
+                       <h4>&nbsp;{{question.answers.all.count}} Answers</h4>
+                    <div class="post-comments">
+                        {% for answer in question.answers.all %}
+                        <!-- comment -->
+                        <div class="media">
+                            <div class="media-left">
+                                {% if answer.user.profile.image %}
+                                <img class="rounded-circle img-fluid mx-auto d-block" src="{{answer.user.profile.image.url}}" style="height: 25px; width: 25px; border-radius: 50%; object-fit: cover;" >
+                                {% else %}
+                                <img class="rounded-circle img-fluid mx-auto d-block" src="{% static 'img/no-profile.jpg' %}" style="height: 25px; width: 25px; border-radius: 50%; object-fit: cover;" >
+                                {% endif %}
+                            </div>
+                            <div class="media-body">
+                                <div class="media-heading">
+                                    <h4>{{answer.user.first_name}} {{answer.user.last_name}}</h4>
+                                    <span class="time">{{answer.created|date}} at {{answer.created|time}}
+                                        <span class="pull-right">30 Upvotes </span>
+                                    </span>
+                                </div>
+                                <p>{{answer.ans}}</p>
+                                 <div class="btn-toolbar">
+                                <button type="button" class="btn btn-success btn-sm pull-right">Upvote</button>
+
+                            </div>
+
+                                <a id="commentButton{{forloop.counter}}" style="text-decoration:none;"><h5
+                                        class="text-muted">Reply</h5></a>
+                                <form class="post-reply" id="commentForm{{forloop.counter}}" style="display:none;">
+                                    <div class="row">
+                                        <div class="col-md-8">
+                                            <div class="form-group">
+                                            <textarea class="form-control" name="message" placeholder="Reply"
+                                                      rows="2"></textarea>
+                                            </div>
+                                            <button class="btn btn-success btn-sm">Reply</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <!-- comment -->
+                                <div class="media">
+                                    <div class="media-left">
+
+                                    </div>
+                                    <div class="media-body">
+                                        <div class="media-heading">
+                                            <small>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmo</small> <span class="time">1 minutes ago</span>
+                                            <a href="#" class="reply">Ram Thapa</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- /comment -->
+                            </div>
+                        </div>
+                        {% endfor %}
+                        <!-- /comment -->
+                    </div>
+                </div>
+                <!-- /comments -->
+
+
+                <!-- reply -->
+
+                <!-- /reply -->
+            </div>
+            <!-- /Post content -->
+
+            <!-- aside -->
+            <div class="col-md-4">
+                <!-- ad -->
+                <div class="aside-widget text-center">
+                    <a href="#" style="display: inline-block;margin: auto;">
+                        <img class="img-responsive" src="./img/ad-1.jpg" alt="">
+                    </a>
+                </div>
+                <!-- /ad -->
+
+                <!-- post widget -->
+                <div class="aside-widget">
+                    <div class="section-title">
+                        <h4>Similar Posts</h4>
+                    </div>
+
+                    <div class="post post-widget">
+                        <div class="post-body">
+                            <p><a href="blog-post.html">Tell-A-Tool: Guide To Web Design And
+                                Development Tools</a></p>
+                        </div>
+                    </div>
+
+                    <div class="post post-widget">
+                        <div class="post-body">
+                            <p><a href="blog-post.html">Pagedraw UI Builder Turns Your Website
+                                Design Mockup Into Code Automatically</a></p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- catagories -->
+                <div class="aside-widget">
+                                <div class="divider mb-4"></div>
+
+                    <div class="category-widget">
+                        <ul>
+                            {% for category in categories %}
+                            <li><a href="#" class="cat-1">{{category.title}}<span>{{category.category_questions.all.count}}</span></a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- /aside -->
+        </div>
+        <!-- /row -->
+    </div>
+    <!-- /container -->
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+
+<script>
+  $("#formButton").click(function() {
+    $("#form1").toggle();
+  });
+
+</script>
+<script>
+    $("#commentButton").click(function(){
+    $("#commentForm").toggle();
+    });
+</script>
+<script>
+
+{% for answer in question.question_answers.all %}
+  $("#commentButton{{forloop.counter}}").click(function() {
+    $("#commentForm{{forloop.counter}}").toggle();
+  });
+{% endfor %}
+
+
+</script>
+
+
+
+
+
+{% endblock %}
