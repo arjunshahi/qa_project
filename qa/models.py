@@ -37,11 +37,6 @@ class QuestionVote(CommonInfo):
     vote = models.PositiveIntegerField(default=0)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_votes_ques')
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['question', 'user'], name='qa upvote')
-        ]
-
 
 class QuestionViews(CommonInfo):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
@@ -61,9 +56,4 @@ class AnswerVote(CommonInfo):
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name='answer_votes')
     vote = models.PositiveIntegerField(default=0)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_votes_ans')
-    time = models.DateTimeField(default=timezone.now())
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['answer', 'user'], name='answer upvote')
-        ]

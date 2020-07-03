@@ -1,9 +1,33 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-
-
-
+{% block extra_css %}
+<style>
+#success-message.tip {
+    border-bottom: 1px;
+    text-decoration: none
+}
+#success-message.tip:hover {
+    position: relative
+}
+#success-message.tip span {
+    display: none
+}
+#success-message.tip:hover span {
+    border: #c0c0c0 1px;
+    padding: 5px 20px 5px 5px;
+    display: block;
+    z-index: 100;
+    background: url(../images/status-info.png) grey  no-repeat 100% 5%;
+    left: 0px;
+    margin: 10px;
+    width: 290px;
+    position: absolute;
+    top:10px;
+    text-decoration: none
+}
+</style>
+{% endblock %}
 <div class="section">
 {% if messages %}
 {% for message in messages %}
@@ -41,18 +65,27 @@
                               </div>
                                 <div class="media-heading">
                                     <span class="time">
-                                     <b>30 Upvotes  15 Views</b>
+                                     <b>30 Votes  15 Views</b>
                                     </span>
                                 </div>
                               <div class="btn-toolbar">
-                                <button type="button" class="btn btn-success btn-sm pull-left">Upvote</button>&nbsp;
-                    <a id="formButton"><button class="btn btn-info btn-sm">Post your Answer</button></a>
+                                  <form action="{% url 'qa:vote_ques' question.pk %}" method="post" id="q-vote-form">
+                                      {% csrf_token %}
+                                      <button type="submit" id="success-message"
+                                              class="{% if voted %}btn btn-danger btn-sm pull-left disabled{% else %} btn btn-success btn-sm pull-left tip{% endif %}">
+                                          {% if voted %}Voted{% else %}Vote{% endif %}<span>Once you voted the post you can not undo again.</span>
+                                      </button>
+                                  </form>
+
+                                  <a id="formButton"><button class="btn btn-info btn-sm">
+                        Post your Answer</button></a>
                     </div>
-                    <form class="post-reply" id="form1" style="display:none;">
+                    <form class="post-reply" method="post" action="{% url 'qa:post_ans' question.pk %}" id="form1" style="display:none;">
+                        {% csrf_token %}
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <textarea class="input" name="message" placeholder="Your Answer"></textarea>
+                                    <textarea class="input" name="ans" placeholder="Your Answer"></textarea>
                                 </div>
                                 <button class="btn btn-info">Submit</button>
                             </div>
@@ -67,43 +100,8 @@
                     </div>
 
                 <div class="section-row">
-
-
-                  <br>  <br>
-<!--                    <div class="post-comments">-->
-<!--                        <div class="media">-->
-<!--                            <div class="media-body">-->
-<!--                            <div class="media-right">-->
-<!--                            </div>-->
-<!--                                <div class="media-heading ">-->
-<!--                                    <small>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmo-->
-<!--                                    </small>-->
-<!--                                    <span class="time">1 minutes ago</span>-->
-<!--                                    <a href="#" class="reply">Ram Thapa</a>-->
-<!--                                </div>-->
-
-<!--                            </div>-->
-<!--                        </div><br>-->
-<!--                        <a id="commentButton" style="text-decoration:none;"><h5>Add a comment</h5></a>-->
-<!--                        <div class="section-row">-->
-<!--                            <form class="post-reply" id="commentForm" style="display:none;" >-->
-<!--                                <div class="row">-->
-<!--                                    <div class="col-md-8">-->
-<!--                                        <div class="form-group">-->
-<!--                                            <textarea class="form-control" name="message" placeholder="Comment"-->
-<!--                                                      rows="2"></textarea>-->
-<!--                                        </div>-->
-<!--                                        <button class="btn btn-success btn-sm">Add</button>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </form>-->
-<!--                        </div>-->
-<!--                    </div>-->
-
                 </div>
                 </div>
-
-
                 <div class="section-row">
                        <h4>&nbsp;{{question.answers.all.count}} Answers</h4>
                     <div class="post-comments">
@@ -120,19 +118,19 @@
                             <div class="media-body">
                                 <div class="media-heading">
                                     <h4>{{answer.user.first_name}} {{answer.user.last_name}}</h4>
-                                    <span class="time">{{answer.created|date}} at {{answer.created|time}}
-                                        <span class="pull-right">30 Upvotes </span>
-                                    </span>
+                                    <small class="mb-2 text-muted">Answered {{answer.created|timesince}} ago
+                                        <span class="pull-right"><b>30 Votes</b> </span>
+                                    </small>
                                 </div>
                                 <p>{{answer.ans}}</p>
                                  <div class="btn-toolbar">
-                                <button type="button" class="btn btn-success btn-sm pull-right">Upvote</button>
+                                <button type="button" class="btn btn-success btn-sm pull-right">Vote</button>
 
                             </div>
 
-                                <a id="commentButton{{forloop.counter}}" style="text-decoration:none;"><h5
+                                <a id="commentButton{{answer.pk}}" style="text-decoration:none;"><h5
                                         class="text-muted">Reply</h5></a>
-                                <form class="post-reply" id="commentForm{{forloop.counter}}" style="display:none;">
+                                <form class="post-reply" id="commentForm{{answer.pk}}" style="display:none;">
                                     <div class="row">
                                         <div class="col-md-8">
                                             <div class="form-group">
@@ -241,12 +239,38 @@
 </script>
 <script>
 
-{% for answer in question.question_answers.all %}
-  $("#commentButton{{forloop.counter}}").click(function() {
-    $("#commentForm{{forloop.counter}}").toggle();
+{% for answer in question.answers.all %}
+  $("#commentButton{{answer.pk}}").click(function() {
+    $("#commentForm{{answer.pk}}").toggle();
   });
 {% endfor %}
 
+
+</script>
+<script type="text/javascript">
+     $(function(){
+    var $qVoteForm = $('#q-vote-form')
+    $qVoteForm.submit(function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      var $formData = $(this).serialize()
+      var $thisURL = $qVoteForm.attr('action')
+      $.ajax({
+         method: "POST",
+         url: $thisURL,
+         data: $formData,
+         dataType:'json',
+         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+         success: function (data, textStatus, jqXHR){
+              $('#success-message').html(data.msg).removeClass('btn btn-success').addClass('btn btn-danger disabled');
+               console.log(data);
+                },
+
+      });
+
+ });
+
+  });
 
 </script>
 
