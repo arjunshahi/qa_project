@@ -10,3 +10,7 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
     pass
+
+@admin.register(Answer)
+class AnswerAdmin(admin.ModelAdmin):
+    pass

@@ -14,7 +14,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views import View
 
 from users.forms import UserRegisterForm, UserLoginForm
-from users.models import CustomUser
+from users.models import CustomUser, Profile
 
 
 def login_user(request):
@@ -45,6 +45,7 @@ def register_user(request):
             user = form.save()
             user.is_active = False
             user.save()
+            Profile.objects.create(user=user)
             print('///')
             # sending activation link to email here
 

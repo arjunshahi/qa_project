@@ -1,39 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 {% block content %}
 {% block extra_css %}
-<style>
-#success-message.tip {
-    border-bottom: 1px;
-    text-decoration: none
-}
-#success-message.tip:hover {
-    position: relative
-}
-#success-message.tip span {
-    display: none
-}
-#success-message.tip:hover span {
-    border: #c0c0c0 1px;
-    padding: 5px 20px 5px 5px;
-    display: block;
-    z-index: 100;
-    background: url(../images/status-info.png) grey  no-repeat 100% 5%;
-    left: 0px;
-    margin: 10px;
-    width: 290px;
-    position: absolute;
-    top:10px;
-    text-decoration: none
-}
-</style>
+
 {% endblock %}
 <div class="section">
-{% if messages %}
-{% for message in messages %}
-<div class="text-center"><b class="alert {{message.tags}} message">{{message}}</b></div>
-{% endfor %}
-{% endif %}
     <!-- container -->
     <div class="container">
         <!-- row -->
@@ -42,91 +14,141 @@
             <div class="col-md-8">
                 <div class="section-row ">
                     <div class="main-post ">
+                        <h4>Question:
+                        </h4>
                         <p>{{question.question}}</p>
                         <div class="post-comments">
-                               <div class="media">
-                          <div class="media-body">
-                                 <div class="card pull-right text-white bg-secondary mb-3" style="width: 13rem;">
-                                      <div class="media-heading">
+                            <div class="media">
+                                <div class="media-body">
+                                    <div class="card pull-right text-white bg-secondary mb-3" style="width: 13rem;">
+                                        <div class="media-heading">
                                     <span class="time">
                                         <b>Posted by</b>
                                     </span>
-                                </div>
-                                  <div class="card-body">
-                                      <small>
-                                          {{question.user.first_name}}
-                                          {{question.user.last_name}}</b></small>
-                                      <small class="mb-2 text-muted">
-                                          <small>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; {{question.created|timesince}}
-                                              ago
-                                          </small>
-                                      </small>
-                                  </div>
-                              </div>
-                                <div class="media-heading">
-                                    <span class="time">
-                                     <b>30 Votes  15 Views</b>
-                                    </span>
-                                </div>
-                              <div class="btn-toolbar">
-                                  <form action="{% url 'qa:vote_ques' question.pk %}" method="post" id="q-vote-form">
-                                      {% csrf_token %}
-                                      <button type="submit" id="success-message"
-                                              class="{% if voted %}btn btn-danger btn-sm pull-left disabled{% else %} btn btn-success btn-sm pull-left tip{% endif %}">
-                                          {% if voted %}Voted{% else %}Vote{% endif %}<span>Once you voted the post you can not undo again.</span>
-                                      </button>
-                                  </form>
+                                        </div>
+                                        <div class="card-body">
 
-                                  <a id="formButton"><button class="btn btn-info btn-sm">
-                        Post your Answer</button></a>
-                    </div>
-                    <form class="post-reply" method="post" action="{% url 'qa:post_ans' question.pk %}" id="form1" style="display:none;">
-                        {% csrf_token %}
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <textarea class="input" name="ans" placeholder="Your Answer"></textarea>
+                                            <small>
+
+                                                {% if question.user.profile.image %}
+                                                <img class="rounded-circle img-fluid mx-auto d-block"
+                                                     src="{{question.user.profile.image.url}}"
+                                                     style="height: 25px; width: 25px; border-radius: 50%; object-fit: cover;">
+                                                {% else %}
+                                                <img class="rounded-circle img-fluid mx-auto d-block"
+                                                     src="{% static 'img/no-profile.jpg' %}"
+                                                     style="height: 25px; width: 25px; border-radius: 50%; object-fit: cover;">
+                                                {% endif %}
+                                                 <small><b>{{question.user.first_name}}
+                                                     {{question.user.last_name}}</b></small><br>
+                                                <small>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;<b><b id="q-score">{{question.user.profile.score}}</b> Score</b></small><br>
+                                            </small>
+                                            <small class="mb-2 text-muted">
+                                                <small>{{question.created|timesince}}
+                                                    ago
+                                                </small>
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="media-heading">
+                                    <span class="time">
+                                        <b><b id="q-vote">{{question.question_votes.all.count}}</b> Votes  15 Views</b>
+                                    </span>
+                                    </div>
+                                    <small><b id="info" style="color:red;"></b></small>
+                                    <div class="btn-toolbar">
+                                        <form action="{% url 'qa:vote_ques' question.pk %}" method="post"
+                                              id="q-vote-form">
+                                            {% csrf_token %}
+                                            <button style="margin:5px;" type="submit" id="success-message"
+
+                                                    title="{% if not question.user == request.user %}
+                                                    Once you voted you can not undo.
+                                                    {% else %} You can't vote your own post{% endif %}"
+
+                                                    class="{% if voted %}btn btn-danger btn-sm pull-left disabled{% else %} btn btn-success btn-sm pull-left{% endif %}">
+                                                {% if voted %}<strong>Voted</strong>{% else %}Vote{% endif %}
+
+                                            </button>
+
+                                        </form>
+                                         <a id="formButton">
+                                        <button style="margin:5px;" class="btn btn-info btn-sm">
+                                            Post an Answer
+                                        </button>
+                                    </a>
+                                    </div>
+                                    <form class="post-reply" method="post" action="{% url 'qa:post_ans' question.pk %}"
+                                          id="form1" style="display:none;">
+                                        {% csrf_token %}
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class="form-group">
+                                                    <textarea class="form-control" name="ans"
+                                                              placeholder="Your Answer" rows="6"></textarea>
+                                                </div>
+                                                <button class="btn btn-info">Submit</button>
+                                            </div>
+                                        </div>
+                                    </form>
+
                                 </div>
-                                <button class="btn btn-info">Submit</button>
                             </div>
                         </div>
-                    </form>
-
-                          </div>
-                           </div>
-                        </div>
 
 
                     </div>
 
-                <div class="section-row">
+                    <div class="section-row">
+                    </div>
                 </div>
-                </div>
                 <div class="section-row">
-                       <h4>&nbsp;{{question.answers.all.count}} Answers</h4>
+                    <h4>&nbsp;{{answers.count}} Answers</h4>
                     <div class="post-comments">
-                        {% for answer in question.answers.all %}
+                        {% for answer in answers %}
                         <!-- comment -->
                         <div class="media">
                             <div class="media-left">
                                 {% if answer.user.profile.image %}
-                                <img class="rounded-circle img-fluid mx-auto d-block" src="{{answer.user.profile.image.url}}" style="height: 25px; width: 25px; border-radius: 50%; object-fit: cover;" >
+                                <img class="rounded-circle img-fluid mx-auto d-block"
+                                     src="{{answer.user.profile.image.url}}"
+                                     style="height: 25px; width: 25px; border-radius: 50%; object-fit: cover;">
                                 {% else %}
-                                <img class="rounded-circle img-fluid mx-auto d-block" src="{% static 'img/no-profile.jpg' %}" style="height: 25px; width: 25px; border-radius: 50%; object-fit: cover;" >
+                                <img class="rounded-circle img-fluid mx-auto d-block"
+                                     src="{% static 'img/no-profile.jpg' %}"
+                                     style="height: 25px; width: 25px; border-radius: 50%; object-fit: cover;">
                                 {% endif %}
                             </div>
                             <div class="media-body">
                                 <div class="media-heading">
-                                    <h4>{{answer.user.first_name}} {{answer.user.last_name}}</h4>
-                                    <small class="mb-2 text-muted">Answered {{answer.created|timesince}} ago
-                                        <span class="pull-right"><b>30 Votes</b> </span>
+                                    <h5>{{answer.user.first_name}} {{answer.user.last_name}}
+                                        <small><b><b id="a-score{{answer.pk}}">{{answer.user.profile.score|intcomma}}</b> Score</b></small>
+                                    </h5>
+                                    <small class="mb-2 text-muted"><small>Answered {{answer.created|timesince}} ago</small>
+                                        <span class="pull-right time"><b><b id="a-vote{{answer.pk}}">{{answer.answer_votes.all.count}}</b> Votes</b> </span>
                                     </small>
                                 </div>
                                 <p>{{answer.ans}}</p>
-                                 <div class="btn-toolbar">
-                                <button type="button" class="btn btn-success btn-sm pull-right">Vote</button>
+                                 <small><b id="a-info{{answer.pk}}" style="color:red;"></b></small>
 
-                            </div>
+                                <div class="btn-toolbar">
+                                    <form action="{% url 'qa:vote_ans' answer.pk %}" method="post" id="a-vote-form{{answer.pk}}">
+                                        {% csrf_token %}
+                                        <button style="margin:5px;" type="submit" title="Once you voted you can not undo." id="a-success-message{{answer.pk}}"
+                                                    class="{% if answer in a_voted_list %}btn btn-danger btn-sm pull-left disabled{% else %} btn btn-success btn-sm pull-left tip{% endif %}">
+                                                {% if answer in a_voted_list %}<strong>Voted</strong>{% else %}Vote{% endif %}</button>
+                                    </form>
+                                    {% if answer.question.user == request.user or answer.is_accepted %}
+                                     <form action="{% url 'qa:accept_ans' answer.pk %}" method="post" id="a-accept-form{{answer.pk}}">
+                                        {% csrf_token %}
+                                        <button style="margin:5px;" title="Once you accept the answer you can not undo." type="submit" id="a-accept{{answer.pk}}"
+                                                    class="{% if answer.is_accepted %}btn btn-danger btn-sm pull-left disabled{% else %}btn btn-info btn-sm pull-left{% endif %}">
+                                               {% if answer.is_accepted %}<strong>Accepted</strong>{% else %}Accept{% endif %}</button>
+                                    </form>
+                                    {% endif %}
+
+                                </div>
+                                <br>
 
                                 <a id="commentButton{{answer.pk}}" style="text-decoration:none;"><h5
                                         class="text-muted">Reply</h5></a>
@@ -149,7 +171,10 @@
                                     </div>
                                     <div class="media-body">
                                         <div class="media-heading">
-                                            <small>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmo</small> <span class="time">1 minutes ago</span>
+                                            <small>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+                                                eiusmo
+                                            </small>
+                                            <span class="time">1 minutes ago</span>
                                             <a href="#" class="reply">Ram Thapa</a>
                                         </div>
                                     </div>
@@ -175,7 +200,7 @@
                 <!-- ad -->
                 <div class="aside-widget text-center">
                     <a href="#" style="display: inline-block;margin: auto;">
-                        <img class="img-responsive" src="./img/ad-1.jpg" alt="">
+                        <img class="img-responsive" src="% static 'img/ad-1.jpg' %}" alt="">
                     </a>
                 </div>
                 <!-- /ad -->
@@ -204,12 +229,13 @@
 
                 <!-- catagories -->
                 <div class="aside-widget">
-                                <div class="divider mb-4"></div>
+                    <div class="divider mb-4"></div>
 
                     <div class="category-widget">
                         <ul>
                             {% for category in categories %}
-                            <li><a href="#" class="cat-1">{{category.title}}<span>{{category.category_questions.all.count}}</span></a></li>
+                            <li><a href="#" class="cat-1">{{category.title}}<span>{{category.category_questions.all.count}}</span></a>
+                            </li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -231,19 +257,22 @@
     $("#form1").toggle();
   });
 
+
 </script>
 <script>
     $("#commentButton").click(function(){
     $("#commentForm").toggle();
     });
+
 </script>
 <script>
 
-{% for answer in question.answers.all %}
+{% for answer in answers %}
   $("#commentButton{{answer.pk}}").click(function() {
     $("#commentForm{{answer.pk}}").toggle();
   });
 {% endfor %}
+
 
 
 </script>
@@ -262,9 +291,12 @@
          dataType:'json',
          csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
          success: function (data, textStatus, jqXHR){
-              $('#success-message').html(data.msg).removeClass('btn btn-success').addClass('btn btn-danger disabled');
+                  $('#success-message').html(data.msg).removeClass('btn btn-success').addClass('btn btn-danger disabled');
+              $('#q-vote').html(data.count);
+              $('#q-score').html(data.score);
                console.log(data);
                 },
+
 
       });
 
@@ -272,9 +304,75 @@
 
   });
 
+
 </script>
 
+<script type="text/javascript">
+{% for answer in answers %}
+     $(function(){
+    var $aVoteForm = $('#a-vote-form{{answer.pk}}')
+    $aVoteForm.submit(function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      var $formData = $(this).serialize()
+      var $thisURL = $aVoteForm.attr('action')
+      $.ajax({
+         method: "POST",
+         url: $thisURL,
+         data: $formData,
+         dataType:'json',
+         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+         success: function (data, textStatus, jqXHR){
+              $('#a-success-message{{answer.pk}}').html(data.msg).removeClass('btn btn-success').addClass('btn btn-danger disabled');
+              $('#a-vote{{answer.pk}}').html(data.count);
+              $('#a-score{{answer.pk}}').html(data.score);
+               console.log(data);
+                },
+      });
 
+ });
+
+  });
+
+{% endfor %}
+</script>
+
+<script type="text/javascript">
+{% for answer in question.answers.all %}
+     $(function(){
+    var $aAcceptForm = $('#a-accept-form{{answer.pk}}')
+    $aAcceptForm.submit(function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      var $formData = $(this).serialize()
+      var $thisURL = $aAcceptForm.attr('action')
+      $.ajax({
+         method: "POST",
+         url: $thisURL,
+         data: $formData,
+         dataType:'json',
+         csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+         success: function (data, textStatus, jqXHR){
+              $('#a-accept{{answer.pk}}').html(data.msg).removeClass('btn btn-info').addClass('btn btn-danger disabled');
+              $('#a-score{{answer.pk}}').html(data.score);
+               console.log(data);
+                },
+      });
+
+ });
+
+  });
+
+{% endfor %}
+</script>
+<script>
+    $(document).ready(function() {
+        setTimeout(function() {
+            $('#info').fadeOut('slow');
+        }, 3000); // <-- time in milliseconds, 1000 =  1 sec
+        });
+
+</script>
 
 
 

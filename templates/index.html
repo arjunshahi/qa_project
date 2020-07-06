@@ -5,95 +5,111 @@
 <div class="section">
     <!-- container -->
     <div class="container">
+
         <!-- row -->
         <div class="row">
-            <div class="col-md-3">
-                <!-- ad -->
-                <div class="aside-widget text-center">
-                    <a href="#" style="display: inline-block;margin: auto;">
-                        <img class="img-responsive" src="./img/ad-1.jpg" alt="">
-                    </a>
-                </div>
-                <!-- /ad -->
+            <div class="col-md-12">
+                <form class="form-inline" action="">
+                    <input type="text" class="form-control" placeholder="Search">
+                    <select class="form-control"> &nbsp;
+                        <option>Most Recent</option>
+                        <option>Most Voted</option>
+                        <option>Most Viewed</option>
+                        <option>This year</option>
+                        <option>This month</option>
+                        <option>Past 7 days</option>
+                    </select>
+                    <select class="form-control"> &nbsp;
+                        <option>Sort by Categories</option>
+                        <option>Most Voted</option>
+                        <option>Most Viewed</option>
+                        <option>This year</option>
+                        <option>This month</option>
+                        <option>Past 7 days</option>
+                    </select>
+                    <button type="submit" class="btn btn-info">Submit</button>
 
-                <!-- catagories -->
-                <div class="aside-widget">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <div class="form-group">
-                                <label class="pending--option">Sort By</label>
-                                <select class="form-control">
-                                    <option>Most Recent</option>
-                                    <option>Most Voted</option>
-                                    <option>Most Viewed</option>
-                                    <option>This year</option>
-                                    <option>This month</option>
-                                    <option>Past 7 days</option>
-
-
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+                </form>
             </div>
-            <div class="col-md-6">
-                <div class="row">
+             		<div class="section section-grey">
+				<!-- container -->
+				<div class="container">
+					<!-- row -->
+					<div class="row">
+						<div class="col-md-12">
+							<div class="section-title text-center">
+								<h2>Featured Posts</h2>
+							</div>
+						</div>
 
-                    <div class="form-group">
-                        <input name="q"
-                               type="text"
-                               class="form-control"
-                               id="search"
-                               placeholder="Search Posts"
-                               autocomplete="off"/>
-                    </div>
+						<!-- post -->
+						<div class="col-md-4">
+							<div class="post">
+								<a class="post-img" href="blog-post.html"><img src="./img/post-4.jpg" alt=""></a>
+								<div class="post-body">
+									<div class="post-meta">
+										<a class="post-category cat-2" href="category.html">JavaScript</a>
+										<span class="post-date">March 27, 2018</span>
+									</div>
+									<h3 class="post-title"><a href="blog-post.html">Chrome Extension Protects Against JavaScript-Based CPU Side-Channel Attacks</a></h3>
+								</div>
+							</div>
+						</div>
+						<!-- /post -->
 
-                   {% for question in questions %}
-                    <div class="col-md-6">
-                        <div class="post">
-                            <div class="post-body">
-                                <div class="post-meta">
-                                    <a class="post-category cat-2" href="#">{{question.category}}</a>
-                                    <span class="post-date">{{question.created}}</span>
-                                </div>
-                                <h3 class="post-title"><a href="{% url 'qa:question_detail' question.pk %}">{{question.question|truncatewords:10}}</a></h3>
-                                <p>{{question.body|truncatewords:20}}</p>
-                            </div>
+						<!-- post -->
+						<div class="col-md-4">
+							<div class="post">
+								<a class="post-img" href="blog-post.html"><img src="./img/post-5.jpg" alt=""></a>
+								<div class="post-body">
+									<div class="post-meta">
+										<a class="post-category cat-3" href="category.html">Jquery</a>
+										<span class="post-date">March 27, 2018</span>
+									</div>
+									<h3 class="post-title"><a href="blog-post.html">Ask HN: Does Anybody Still Use JQuery?</a></h3>
+								</div>
+							</div>
+						</div>
+						<!-- /post -->
+
+						<!-- post -->
+						<div class="col-md-4">
+							<div class="post">
+								<a class="post-img" href="blog-post.html"><img src="./img/post-3.jpg" alt=""></a>
+								<div class="post-body">
+									<div class="post-meta">
+										<a class="post-category cat-1" href="category.html">Web Design</a>
+										<span class="post-date">March 27, 2018</span>
+									</div>
+									<h3 class="post-title"><a href="blog-post.html">Pagedraw UI Builder Turns Your Website Design Mockup Into Code Automatically</a></h3>
+								</div>
+							</div>
+						</div>
+						<!-- /post -->
+					</div>
+					<!-- /row -->
+				</div>
+				<!-- /container -->
+			</div>
+            <hr>
+            {% for question in questions %}
+            <!-- post -->
+            <div class="col-md-4">
+                <div class="post">
+                    <div class="post-body">
+                        <div class="post-meta">
+                            <a class="post-category cat-2" href="">{{question.category}}</a>
+                            <span class="post-date">{{question.created}}</span>
                         </div>
-                    </div>
-                    {% endfor %}
-
-                    <!-- /post -->
-
-                    <div class="col-md-12">
-                        <div class="section-row">
-<!--                            <button class="primary-button center-block">Load More</button>-->
-                        </div>
+                        <h3 class="post-title"><a href="{% url 'qa:question_detail' question.pk %}">{{question.question|truncatewords:10}}</a></h3>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-
-                <!-- catagories -->
-                <div class="aside-widget">
-                    <div class="category-widget">
-                        <ul>
-                            {% for category in categories %}
-                            <li><a href="#" class="cat-1">{{category.title}}<span>{{category.category_questions.all.count}}</span></a></li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
-                <!-- /catagories -->
-
-                <!-- tags -->
-                <!-- /tags -->
-            </div>
-
+            <!-- /post -->
+            {% endfor %}
 
         </div>
+
         <!-- /row -->
     </div>
     <!-- /container -->

@@ -50,6 +50,7 @@ class Answer(CommonInfo):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')
     ans = models.TextField()
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='user_answers')
+    is_accepted = models.BooleanField(default=False)
 
 
 class AnswerVote(CommonInfo):
